@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Image</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #uploadContainer {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #imageInput {
+            display: none;
+        }
+
+        #uploadButton {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        #imagePreview {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #predictionResult {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        #predictButton {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            display: block;
+            margin: 0 auto; /* Center the button */
+        }
+
+        #imagePreview img {
+            max-width: 100%; /* Make sure the image doesn't exceed the container width */
+            height: auto; /* Maintain aspect ratio */
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload Image</h1>
+
+    <div id="uploadContainer">
+        <input type="file" id="imageInput">
+        <label for="imageInput" id="uploadButton">Upload Image</label>
+    </div>
+
+    <div id="imagePreview"></div>
+    <div id="predictionResult"></div>
+    <button id="predictButton">Predict</button>
+
+    <!-- Include any necessary JavaScript for handling image upload and prediction -->
+    <script>
+        // Function to handle file upload
+        document.getElementById('imageInput').addEventListener('change', function() {
+            var fileInput = document.getElementById('imageInput');
+            var file = fileInput.files[0];
+            var formData = new FormData();
+            formData.append('file', file);
+
+            // Display the uploaded image
+            var imagePreview = document.getElementById('imagePreview');
+            var img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            imagePreview.innerHTML = ''; // Clear previous image if any
+            imagePreview.appendChild(img);
+
+            // Show the predict button
+            var predictButton = document.getElementById('predictButton');
+            predictButton.style.display = 'block';
+        });
+
+        // Function to handle prediction
+        document.getElementById('predictButton').addEventListener('click', function() {
+            // Send the image to the backend for prediction
+            var fileInput = document.getElementById('imageInput');
+            var file = fileInput.files[0];
+            var formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display the prediction result
+                var predictionResult = document.getElementById('predictionResult');
+                predictionResult.textContent = 'Predicted Disease: ' + data['Predicted Disease'];
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
